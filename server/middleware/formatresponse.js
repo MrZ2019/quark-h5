@@ -1,4 +1,7 @@
 module.exports = async (ctx, next) => {
+	if (ctx.path.match(/^\/page\/download/)) {
+		return await next()
+	}
 	await next().then(() => {
 		if (ctx.status === 200) {
 			ctx.body = {

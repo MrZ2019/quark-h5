@@ -2,6 +2,7 @@
 <template>
   <div class="qk-image-carsousel">
     <!--异步加载轮播图的情况;-->
+	<div class="cover"></div>
     <Swiper class="image-carsousel-swiper" v-if="imageSrcList.length > 0"  :autoPlay='true' :showIndicator='true' :interval="interval" duration="500">
       <Slide class="image-carsousel-slide" v-for="(item,index) in imageSrcList" :key="index">
         <img  class="image-carsousel-image" :src="item" alt="">
@@ -57,5 +58,14 @@
 <style>
   .image-carsousel-swiper .wh_swiper{
     height: 100%;
+  }
+
+  .cover {
+	  position: absolute;
+	  top: 0;
+	  left: 0;
+	  width: 100%;
+	  height: 100%;
+	  z-index: 100;
   }
 </style>

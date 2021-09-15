@@ -135,6 +135,8 @@
 					if (valid) {
 						this.$axios.post('/auth/login', this.formData).then(res => {
 							this.$store.dispatch('updateUserToken', res.body.token)
+							sessionStorage.setItem('UserToken', res.body.token);
+							
 							this.$router.push('/');
 							this.getUserInfo();
 						})

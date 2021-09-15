@@ -8,7 +8,10 @@
           <p v-if="!pageData.isPublish" class="gray fontsize-12 lineheight-18">注意：为防范钓鱼安全风险，预览内容仅供作者调试使用，有效期 50 分钟，如需供他人预览，请使用发布功能。</p>
         </el-form-item>
         <el-form-item label="页面链接:">
-          <div><el-button type="primary" @click="doCopy">复制链接</el-button></div>
+          <div>
+            <el-button type="primary" @click="doCopy">复制链接</el-button>
+            <el-button type="primary" @click="doDownload">下载</el-button>
+          </div>
           <div class="share-wx-config-wrapper">{{$config.baseURL + '/page/view/' + pageId}}</div>
         </el-form-item>
         <!--页面效果-->
@@ -103,6 +106,9 @@
 				this.$copyText(this.pageLink).then(() => {
 					this.$message.success('已复制')
 				})
+			},
+			doDownload: function () {
+        window.open(this.$config.baseURL + '/page/download/' + this.pageId);
 			}
 		}
 	}

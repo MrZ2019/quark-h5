@@ -16,6 +16,100 @@ router.get('/view/:_id', async ctx=> {
 	// todo 根据不同type渲染不同得模板引擎
 	await ctx.render('h5-swiper',{pageData: page})
 })
+var archiver = require('archiver');
+var send = require('koa-send');
+
+router.get('/download/:_id', async ctx=> {
+	let _id = mongoose.mongo.ObjectId(ctx.params._id)
+	let page = await Page.findOne({_id})
+	ctx.status = 200;
+	// todo 根据不同type渲染不同得模板引擎
+	
+
+	
+	var output = fs.createWriteStream(__dirname + '/../example.zip');
+	var archive = archiver('zip', {
+	  zlib: { level: 9 } // Sets the compression level.
+	});
+	
+	// listen for all archive data to be written
+	// 'close' event is fired only when a file descriptor is involved
+	let r;
+	var result = new Promise((resolve) => {
+		r = resolve;
+	})
+	output.on('close', async() => {
+	  console.log(archive.pointer() + ' total bytes');
+	  console.log('archiver has been finalized and the output file descriptor has closed.');
+
+	
+	  let path = './server/example.zip';
+	  ctx.attachment(path)
+  
+	  await send(ctx, path);
+
+	  r()
+	});
+	
+	// This event is fired when the data source is drained no matter what was the data source.
+	// It is not part of this library but rather from the NodeJS Stream API.
+	// @see: https://nodejs.org/api/stream.html#stream_event_end
+	output.on('end', function() {
+	  console.log('Data has been drained');
+
+
+	});
+	
+	// good practice to catch warnings (ie stat failures and other non-blocking errors)
+	archive.on('warning', function(err) {
+	  if (err.code === 'ENOENT') {
+		// log warning
+	  } else {
+		// throw error
+		throw err;
+	  }
+	});
+	
+	// good practice to catch this error explicitly
+	archive.on('error', function(err) {
+	  throw err;
+	});
+	
+	// pipe archive data to the file
+	archive.pipe(output);
+	
+	// append a file from stream
+	var file1 = __dirname + '/../template/index.htm';
+	archive.append(fs.createReadStream(file1), { name: 'index.htm' });
+
+	file1 = __dirname + '/../template/res/vue.js';
+	archive.append(fs.createReadStream(file1), { name: 'res/vue.js' });
+	file1 = __dirname + '/../template/res/animate.min.css';
+	archive.append(fs.createReadStream(file1), { name: 'res/animate.min.css' });
+	file1 = __dirname + '/../template/res/h5-swiper.css';
+	archive.append(fs.createReadStream(file1), { name: 'res/h5-swiper.css' });
+	file1 = __dirname + '/../template/res/h5-swiper.umd.js';
+	archive.append(fs.createReadStream(file1), { name: 'res/h5-swiper.umd.js' });
+	file1 = __dirname + '/../template/res/swiper.min.css';
+	archive.append(fs.createReadStream(file1), { name: 'res/swiper.min.css' });
+	file1 = __dirname + '/../template/res/swiper.min.js';
+	archive.append(fs.createReadStream(file1), { name: 'res/swiper.min.js' });
+	file1 = __dirname + '/../template/res/tracker.min.js';
+	archive.append(fs.createReadStream(file1), { name: 'res/tracker.min.js' });
+
+	var json = JSON.stringify(page);
+	
+	archive.append(`window._pageData = ${json}`, { name: 'data.js' });
+
+	// archive.directory('subdir/', false);
+
+	archive.glob('../template/*.*');
+
+	archive.finalize();
+
+	// ctx.append('Content-Disposition', 'attachment;filename=example.zip');
+	await result
+})
 
 /**
  * 获取所有page

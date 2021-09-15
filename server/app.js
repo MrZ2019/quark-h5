@@ -49,8 +49,10 @@ app.use(koajwt({ secret: SECRET}).unless({
 	path: [
 		/^\/common\/html2canvas\/corsproxy/, // 排除html2canvas跨域接口
 		/^\/page\/view/,
+		/^\/page\/download/,
 		/^\/auth\/login/,
-		/^\/auth\/register/
+		/^\/auth\/register/,,
+		/^\/test/,
 	]
 }));
 
@@ -71,23 +73,38 @@ router.use(async (ctx,next)=>{
 	await  next()
 })
 
+
+
 // 链接数据库
 mongoConf.connect();
 
-
+var send = require('koa-send');
 //配置路由
 fs.readdirSync(path.join(__dirname,'./routes')).forEach(route=> {
 	let api = require(`./routes/${route}`)
 	router.use(`/${route.replace('.js', '')}`, api.routes())
 })
 
+router.get('/test', async (ctx)=> {
+	let path = './server/example.zip';
+	ctx.attachment(path)
+ 
+	await send(ctx, path)
+})
 
 app.use(formatresponse);
 
 app.use(router.routes());   /*启动路由*/
 app.use(router.allowedMethods());
 
-
-
+let mongoose = require('mongoose');
+let Books = require('./models/book')
+let data = {
+	title: 'Spring'
+}
+Books.create({
+	...data,
+	_id: mongoose.mongo.ObjectId()
+})
 //启动服务
 app.listen(4000);
