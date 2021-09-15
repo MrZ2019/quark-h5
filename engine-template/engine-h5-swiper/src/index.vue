@@ -1,5 +1,5 @@
 <template>
-  <div class="engine-template-wrapper">
+  <div class="engine-template-wrapper hidden">
     <!--swiper-->
     <div class="swiper-container">
       <div class="swiper-wrapper">
@@ -11,6 +11,7 @@
             <componentsTemplate
                     v-for="(item, index) in page.elements"
                     :key="index"
+                    :loaded="item._loaded"
                     @handleElementClick="handleElementClick"
                     :element="item"
                     :style="getCommonStyle(item.commonStyle, scalingRatio)">
@@ -18,7 +19,6 @@
           </div>
         </div>
       </div>
-
       <div class="swiper-pagination"></div><!--分页器。如果放置在swiper-container外面，需要自定义样式。-->
     </div>
   </div>
@@ -28,13 +28,11 @@
 	import editorProjectConfig from '@client/pages/editor/DataModel'
 	import componentsTemplate from './components-template'
 	import $config from '@client/config'
-	import elementEvents from '@client/mixins/elementEvents'
 	export default {
 		name: 'engineH5Swiper',
 		components: {
 			componentsTemplate
 		},
-		mixins: [elementEvents],
 		data() {
 			return {
 				getCommonStyle: editorProjectConfig.getCommonStyle,
@@ -42,28 +40,51 @@
 				pageData: {
 					pages: []
 				},
-				pageTop: 0
+				pageTop: 0,
+				activeIndex: 0,
 			}
 		},
 		created() {
-			this.pageData = window._pageData;
-			this.scalingRatio = document.body.clientWidth / $config.canvasH5Width
-			this.pageTop = (document.documentElement.clientHeight - this.pageData.height * this.scalingRatio) / 2
+			let pageData = window._pageData;
+			this.scalingRatio = document.body.clientWidth / $config.canvasH5Width;
+			this.pageTop = (document.documentElement.clientHeight - pageData.height * this.scalingRatio) / 2
 			this.pageTop = Math.max(this.pageTop, 0);
+
+			// 将组件加个状态标识
+			pageData.pages.forEach((page, index) => {
+				page.elements.forEach(e => {
+					e._loaded = (index === 0);
+        })
+      })
+      this.pageData = pageData;
+		},
+		mounted() {
+			let that =this;
+			// 判断翻页类型
+			var direction = this.pageData.flipType === 0 ? 'vertical' : 'horizontal'
+			var showSlideNumber = !!this.pageData.slideNumber
+			new window.Swiper('.swiper-container', {
+				direction: direction,
+				loop: false,
+				pagination: showSlideNumber ? { el: '.swiper-pagination'} : {},
+				scrollbar: {
+					el: '.swiper-scrollbar',
+				},
+				on:{
+					slideChange: function(){
+						that.onSwipe(this.activeIndex);
+					},
+				},
+			});
 		},
 		methods: {
-			/**
-			 * 按钮点击事件
-			 * @param eventsData
-			 */
-			async handleElementClick(eventsData, element) {
-				for (let i = 0, len = eventsData.length; i < len; i++) {
-					if (this['_event_' + eventsData[i].type]) {
-						await this['_event_' + eventsData[i].type](eventsData[i], element, this.pageData)
-					}
-				}
+			onSwipe(index) {
+				this.activeIndex = index;
+				this.pageData.pages[this.activeIndex].elements.forEach(e => {
+					e._loaded = true;
+        })
 			}
-		}
+    }
 	}
 </script>
 
@@ -74,10 +95,10 @@
     height: 100%;
   }
 
+
   .relative {
     position: relative;
   }
-
   .hidden {
     overflow: hidden;
   }

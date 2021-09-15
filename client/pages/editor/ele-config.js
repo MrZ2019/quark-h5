@@ -115,52 +115,34 @@ export default [
 		title: '表单组件',
 		components: [
 			{
-				elName: 'qk-input',
+				elName: 'input',
 				title: '文本框',
-				icon: 'iconfont iconwenbenkuang',
-				isForm: true,
-				defaultStyle: {
-					height: 28,
-					width: 200,
-					paddingTop: 2,
-					paddingBottom: 2,
-					paddingLeft: 10,
-					paddingRight: 10,
-					borderColor: "#999999",
-					borderStyle: 'solid',
-					borderWidth: 1,
-					borderRadius: 4
-				}
+				icon: 'iconfont iconwenbenkuang'
 			},
 			{
 				elName: 'radio',
 				title: '单选框',
-				icon: 'iconfont iconplus-radio',
-				isForm: true,
+				icon: 'iconfont iconplus-radio'
 			},
 			{
 				elName: 'checkbox',
 				title: '复选框',
-				icon: 'iconfont iconduoxuan',
-				isForm: true,
+				icon: 'iconfont iconduoxuan'
 			},
 			{
 				elName: 'date',
 				title: '日期选择器',
-				icon: 'iconfont iconriqi',
-				isForm: true,
+				icon: 'iconfont iconriqi'
 			},
 			{
 				elName: 'time',
 				title: '时间选择器',
-				icon: 'iconfont iconshijian',
-				isForm: true,
+				icon: 'iconfont iconshijian'
 			},
 			{
 				elName: 'datetime',
 				title: '日期时间',
-				icon: 'iconfont iconriqishijian',
-				isForm: true,
+				icon: 'iconfont iconriqishijian'
 			}
 		]
 	},

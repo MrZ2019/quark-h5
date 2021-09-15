@@ -144,7 +144,7 @@
 			 */
 			initPageData() {
 				this.loading = true;
-				this.$axios.get('/page/detail/' + this.id).then(res => {
+				this.$API.getPageDetail({pageId: this.id}).then(res => {
 					this.loading = false;
 					this.$store.dispatch('setPrjectData', {
 						...res.body
@@ -159,7 +159,7 @@
 			async saveFn() {
 				// await this.screenshots()
 				// 提交数据再预览
-				this.$axios.post('/page/update/' + this.id, this.projectData).then(() => {
+				this.$API.updatePage({pageData: this.projectData}).then(() => {
 					this.$message.success('保存成功!')
 					this.showPreview = false
 				})
@@ -168,18 +168,19 @@
 			 * 保存
 			 */
 			async publishFn() {
-				// await this.screenshots()
 				// 提交数据再预览
-				this.$axios.post('/page/publish/' + this.id, this.projectData).then(() => {
-					this.$message.success('发布成功!')
+        let data = {...this.projectData};
+        data.isPublish = true;
+				this.$API.updatePage({pageData: data}).then(() => {
+					this.$message.success('已成功保存并发布!');
 					this.showPreview = false
-					this.$router.push({path: 'page-list', query: {previewId: this.id}})
+          this.$router.push({name: 'pageList'})
 				})
 			},
 			async showPreviewFn() {
 				// await this.screenshots()
 				// 提交数据再预览
-				this.$axios.post('/page/update/' + this.id, this.projectData).then(() => {
+				this.$API.updatePage({pageData: this.projectData}).then(() => {
 					this.showPreview = true
 				})
 			},
@@ -192,7 +193,7 @@
 					cancelButtonText: '取消',
 					type: 'warning'
 				}).then(() => {
-          this.$router.push('/page-list')
+          this.$router.push({name: 'Home'})
 				}).catch(() => {})
 			},
 			/**

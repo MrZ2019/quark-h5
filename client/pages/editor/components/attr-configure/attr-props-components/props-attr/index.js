@@ -3,13 +3,11 @@ import imageSrc from './imageSrc'
 import imageSrcList from './imageSrcList'
 import Url from './url'
 import musicSrc from './musicSrc'
-import placeholder from './placeholder'
 
 export default {
 	[Text.name]: Text,
 	[imageSrc.name]: imageSrc,
 	[Url.name]: Url,
 	[musicSrc.name]: musicSrc,
-	[imageSrcList.name]: imageSrcList,
-	[placeholder.name]: placeholder
+	[imageSrcList.name]: imageSrcList
 }
